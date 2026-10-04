@@ -54,5 +54,13 @@ jobs:
           cd /tmp/build
           su builder -c "makepkg -si --noconfirm"
 
+      - name: Install X server
+        run: sudo pacman -S --noconfirm xorg-server-xvfb
+
+      - name: Start Xvfb
+        run: |
+          Xvfb :99 -screen 0 1280x1024x24 &
+          echo "DISPLAY=:99" >> "$GITHUB_ENV"
+
       - name: Verify installation
         run: wlrlui -h
