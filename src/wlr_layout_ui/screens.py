@@ -57,12 +57,20 @@ def load_from_hyprctl():
 def load():
     if displayInfo:
         displayInfo.clear()
-
     try:
-        data = json.loads(subprocess.getoutput("hyprctl -j version"))
-        new_hyprland = _parse_hyprland_version(data)
-    except (KeyError, json.JSONDecodeError, ValueError):
-        new_hyprland = not LEGACY
+        result = subprocess.run(
+            ["hyprctl"],
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+        )
+    except OSError:
+        new_hyprland = False
+    else:
+        if result.returncode == 1:
+            data = json.loads(subprocess.getoutput("hyprctl -j version"))
+            new_hyprland = _parse_hyprland_version(data)
+        else:
+            new_hyprland = False
 
     if new_hyprland:
         config["hyprland"] = True
