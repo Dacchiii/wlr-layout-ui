@@ -17,10 +17,14 @@ jobs:
 
       - name: Install AUR dependecies
         run: |
-          cd /tmp
+          useradd -m aur-builder
+          mkdir -p /tmp/aur
+          chown -R aur-builder:aur-builder /tmp/aur
+          echo "aur-builder ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
+          cd /tmp/aur
           git clone "https://aur.archlinux.org/pyglet.git"
           cd pyglet
-          makepkg -si --noconfirm
+          su aur-builder -c "makepkg -si --noconfirm"
 
       - name: Checkout
         uses: actions/checkout@v4
