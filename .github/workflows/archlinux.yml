@@ -13,7 +13,15 @@ jobs:
       image: archlinux:latest
     steps:
       - name: Install base dependencies
-        run: pacman -Syu --noconfirm base-devel git python python-build python-installer python-hatchling libxrender
+        run: pacman -Syu --noconfirm base-devel git python python-build python-installer python-hatchling
+
+      - name: Install X server
+        run: sudo pacman -S --noconfirm libxrender xorg-server-xvfb
+
+      - name: Start Xvfb
+        run: |
+          Xvfb :99 -screen 0 1280x1024x24 &
+          echo "DISPLAY=:99" >> "$GITHUB_ENV"
 
       - name: Install AUR dependecies
         run: |
@@ -53,14 +61,6 @@ jobs:
           su builder -c "git config --global --add safe.directory '${GITHUB_WORKSPACE}'"
           cd /tmp/build
           su builder -c "makepkg -si --noconfirm"
-
-      - name: Install X server
-        run: sudo pacman -S --noconfirm xorg-server-xvfb
-
-      - name: Start Xvfb
-        run: |
-          Xvfb :99 -screen 0 1280x1024x24 &
-          echo "DISPLAY=:99" >> "$GITHUB_ENV"
 
       - name: Verify installation
         run: wlrlui -h
