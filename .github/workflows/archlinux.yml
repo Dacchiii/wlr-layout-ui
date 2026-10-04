@@ -25,6 +25,7 @@ jobs:
           su aur-builder -c "git config --global --add safe.directory '${GITHUB_WORKSPACE}'"
           cd /tmp/aur
           git clone "https://aur.archlinux.org/pyglet.git"
+          chown -R aur-builder:aur-builder /tmp/aur
           cd pyglet
           su aur-builder -c "makepkg -si --noconfirm"
 
